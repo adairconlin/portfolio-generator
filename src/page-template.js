@@ -1,20 +1,105 @@
-const generatePage = (userName, githubName) => {
-    return `
-    <!DOCTYPE html>
-    <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <meta http-equiv="X-UA-Compatible" content="ie=edge">
-            <title>Portfolio Demo</title>
-        </head>
+const generateAbout = aboutText => {
+    if(!aboutText) {
+        return '';
+    }
 
-        <body>
-            <h2>${userName}</h1>
-            <h2><a href="https://github.com/${githubName}">Github</a></h2>
-        </body
-    </html>
+    return `
+<section class="my-3 id=about">
+    <h2 class="text-dark bg-primary p-2 display-inline-block">About Me</h2>
+    <p>${aboutText}</p>
+</section>
     `
 };
 
-module.exports = generatePage;
+const generateProjects = projectsArr => {
+    const featuredProjects = projectsArr.filter(project => {
+        if(project.feature) {
+            return true;
+        } else {
+            return false;
+        }
+    });
+
+    const nonFeaturedProjects = projectsArr.filter(project => {
+        if(!project.feature) {
+            return true;
+        } else {
+            return false;
+        }
+    });
+
+    const featuredProjectHtmlArr = featuredProjects.map(({ projectName, description, languages, link }) => {
+        return `
+<div class="col-12 mb-2 bg-dark text-light p-3 flex-column">
+    <h3 class="portfolio-item-title text-light">${projectName}</h3>
+    <h5 class="portfolio-languages">
+        Built With:
+        ${languages.join(', ')}
+    </h5>
+    <p>${description}</p>
+    <a href="${link}" class="btn mt-auto"><i class="fab fa-github mr-2"></i>View Project on GitHub</a>
+</div>
+        `
+    });
+
+    const nonFeaturedProjectHtmlArr = nonFeaturedProjects.map(({ projectName, description, languages, link }) => {
+        return `
+<div class="col-12 col-md-6 mb-2 bg-dark text-light p-3 flex-column">
+    <h3 class="portfolio-item-title text-light">${projectName}</h3>
+    <h5 class="portfolio-languages">
+        Built With:
+        ${languages.join(', ')}
+    </h5>
+    <p>${description}</p>
+    <a href="${link}" class="btn mt-auto"><i class="fab fa-github mr-2"></i>View Project on GitHub</a>
+</div>
+        `
+    });
+
+    return `
+<section class="my-3 id=portfolio">
+    <h2 class="text-dark bg-primary p-2 display-inline-block">Work</h2>
+    <div class="flex-row justify-space-between">
+    ${featuredProjectHtmlArr.join('')}
+    ${nonFeaturedProjectHtmlArr.join('')}
+    </div>
+</section>
+    `
+};
+
+module.exports = templateData => {
+    const { projects, about, ...header } = templateData;
+    console.log(templateData);
+
+    return `
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>Portfolio Demo</title>
+    </head>
+
+    <body>
+        <header>
+            <div class="container flex-row justify-space-between align-center py-3">
+                <h1 class="page-title text-secondary bg-dark py-2 px-3">${header.userName}</h1>
+                <nav class="flex-row">
+                    <a class="ml-2 my-1 px-2 py-1 bg-secondary text-dark" href="https://github.com/${header.githubName}">GitHub</a>
+                </nav>
+            </div>
+        </header>
+
+        <main class="container my-5">
+            ${generateAbout(about)}
+            ${generateProjects(projects)}
+        </main>
+
+        <footer class="container text-center py-3">
+            <h3 class="text-dark">&copy; ${new Date().getFullYear()} by ${header.userName}</h3>
+        </footer>
+    </body>
+</html>
+    `;
+};

@@ -1,15 +1,9 @@
 const inquirer = require("inquirer");
 //?const { stubFalse } = require("lodash");
-// const fs = require("fs");
-// const generatePage = require("./src/page-template.js");
-
-// const pageHTML = generatePage(userName, github);
+const fs = require("fs");
+const generatePage = require("./src/page-template.js");
 
 
-// fs.writeFile("index.html", pageHTML, err => {
-//     if(err) throw err;
-//     console.log("Portfolio complete! Checkout index.html to see the output!");
-// });
 
 const promptUser = () => {
     return inquirer.prompt([
@@ -28,7 +22,7 @@ const promptUser = () => {
         },
         {
             type: "input",
-            name: "github",
+            name: "githubName",
             message: "Enter your GitHub Username:",
             validate: githubInput => {
                 if(githubInput) {
@@ -142,5 +136,9 @@ const promptProject = portfolioData => {
 promptUser()
     .then(promptProject)
     .then(portfolioData => {
-        console.log(portfolioData);
+        const pageHTML = generatePage(portfolioData);
+
+        fs.writeFile("index.html", pageHTML, err => {
+            if(err) throw new Error(err);
+        });
     });
